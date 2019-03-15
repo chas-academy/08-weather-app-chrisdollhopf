@@ -1,41 +1,67 @@
 import React, { Component } from "react";
 import "./App.css";
 
+const API = `${process.env.REACT_APP_API_KEY_DS}`
+let count = 0;
+
 class App extends Component {
   state = {
-    temperature: [],
-    humidity: [],
-    windSpeed: []
+    temp: [],
+    luftfuktighet: [],
+    vindhastighet: [],
+    latitude: [],
+    longitude: [],
+    unit: 'si'
   };
 
   componentDidMount() {
-    if (navigator.geolocation) {
-    }
+    navigator.geolocation.getCurrentPosition(position => {
+      this.setState({
+        latitude: position.coords.latitude,
+        longitude: position.coords.longitude
+      }, () => {
+        debugger;
+        this.fetchDarkSkyWeather()
+      });
+    });
+  }
+  
+  fetchDarkSkyWeather() {
+    const { latitude, longitude, unit } = this.state;
 
     fetch(
-      "https://cors-anywhere.herokuapp.com/https://api.darksky.net/forecast/e2d3921448cf0e66aa6e4aed72a26abf/37.8267,-122.4233?units=si"
+      `https://cors-anywhere.herokuapp.com/https://api.darksky.net/forecast/${API}/${latitude},${longitude}?units=${unit}`
     )
       .then(response => response.json())
       .then(data => {
         this.setState({
-          temperature: data.currently.temperature,
-          humidity: data.currently.humidity,
-          windSpeed: data.currently.windspeed
+          temp: data.currently.temperature,
+          luftfuktighet: data.currently.humidity,
+          vindhastighet: data.currently.windSpeed
+        }, () => {
+          debugger;
+          console.log(this.state);
         });
-        console.log(this.state);
-        console.log(data);
       });
-  }
+  };
+  
+  // changeUnit()
+  // setState => unit => new unit
+  // trigger new fetchDarkSkyWeather
 
   render() {
+    console.log('::: RENDERED :::', count+=1);
+    const { temp, luftfuktighet, vindhastighet, latitude, longitude } = this.state;
     return (
       <div className="App">
         <header className="App-header">
           <h1>Weather App</h1>
-          <p>temperature: {this.state.temperature}</p>
-          <p>humidity: {this.state.humidity}</p>
-          <p>windspeed: {this.state.windspeed}</p>
-          <p />
+          <p>Latitude: {latitude}</p>
+          <p>Longitude: {longitude}</p>
+          <p>Temperature: {temp}</p>
+          <p>Humidity: {luftfuktighet}</p>
+          <p>Wind Speed: {vindhastighet}</p>
+          <input type="checkbox" name="" id="kdslfkds"/>
         </header>
       </div>
     );
