@@ -1,0 +1,54 @@
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  animation: App-logo-spin infinite 20s linear;
+  height: 40vmin;
+  pointer-events: none;
+}
+
+.App-header {
+  min-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+.App-hourly {
+  background-color: transparent;
+  height: 20vh;
+}
+
+.App-hourly ul {
+  display: flex;
+  height: 100%;
+  width: 100%;
+}
+
+.App-hourly ul li.card {
+  padding: 0.8rem;
+  height: auto;
+  width: calc(100vw / 5);
+}
+
+.App-hourly ul li.card article {
+  box-shadow: 0px 10px 8px 0px rgba(50, 50, 50, 1);
+  position: relative;
+  display: flex;
+  flex-flow: column;
+  height: 100%;
+  justify-content: center;
+}
+
+.App-hourly ul li.card header h3 {
+  margin: 0;
+  padding: 0;
+}
