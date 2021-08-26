@@ -1,154 +1,67 @@
 import React, { Component } from 'react';
 import './App.css';
-
-const API = `${process.env.REACT_APP_API_KEY_DS}`;
-let count = 0;
-
 class App extends Component {
+
   state = {
-    temp: [],
+    timezone: [],
+    sunrise: [],
+    sunset: [],
+    temp: '...loading',
     humidity: [],
+    windbearing: [],
     windspeed: [],
     latitude: [],
     longitude: [],
     unit: 'si'
   };
 
+  /*
+   fahrenheitToCelsius = fahrenheit => (fahrenheit - 32) * 5/9;
+   shorthand variation (one line)
+  */
+
+  fahrenheitToCelsius(fahrenheit) {
+    return (fahrenheit - 32) * 5/9;
+  }
+  
   componentDidMount() {
-    // if (navigator.geolocation) {
-    //   navigator.geolocation.getCurrentPosition(
-    //     (position) => {
-    //       this.setState(
-    //         {
-    //           latitude: position.coords.latitude,
-    //           longitude: position.coords.longitude
-    //         },
-    //         () => {
-    //           this.fetchDarkSkyWeather();
-    //         }
-    //       );
-    //     },
-    //     (error) => {
-    //       alert('Sorry, you need to actually allow us to position you to get weather data for your location!');
-    //       // TODO: show default weather for stockholm...
-    //     },
-    //     {
-    //       enableHighAccuracy: false,
-    //       maximumAge: 600000,
-    //       timeout: 20000
-    //     }
-    //   );
-    // }
-  }
-
-  fetchDarkSkyWeather() {
-    const { latitude, longitude, unit } = this.state;
-
-    fetch(
-      `https://cors-anywhere.herokuapp.com/https://api.darksky.net/forecast/${API}/${latitude},${longitude}?units=${unit}`
+    fetch("/weather")
+    .then(res => res.json())
+    .then(
+      (data) => {
+        console.log(data)
+        this.setState({
+          timezone: data.timezone,
+          // sunrise: DateTime.fromSeconds(data.daily.data[0].sunriseTime).toFormat('hh mm'), // not working!!!
+          sunrise: new Date(data.daily.data[0].sunriseTime * 1000).toLocaleTimeString("en-US", { timeZone: data.timezone, hour12: true }),
+          sunset: new Date(data.daily.data[0].sunsetTime * 1000).toLocaleTimeString("en-US", { timeZone: data.timezone, hour12: true }),
+          temp: Math.round(this.fahrenheitToCelsius(data.currently.temperature)),
+          humidity: data.currently.humidity,
+          windbearing: data.currently.windBearing,
+          windspeed: data.currently.windSpeed,
+        })
+      }
     )
-      .then(response => response.json())
-      .then(data => {
-        this.setState(
-          {
-            temp: data.currently.temperature,
-            humidity: data.currently.humidity,
-            windspeed: data.currently.windSpeed
-          },
-          () => {
-            console.log(this.state);
-          }
-        );
-      });
   }
-
-  // changeUnit()
-  // setState => unit => new unit
-  // trigger new fetchDarkSkyWeather
 
   render() {
-    console.log('::: RENDERED :::', (count += 1), "Photo by Noah Silliman on Unsplash");
-    const { temp, humidity, windspeed, latitude, longitude } = this.state;
+
+    // const { temp } = this.state;
+    // const DateTime = luxon.DateTime;
+    
     return (
-      <div className="App">
-        <header className="App-header">
-          {/* <h1>Weather App</h1>
-          <p>Latitude: {latitude}</p>
-          <p>Longitude: {longitude}</p>
-          <p>Temperature: {temp}</p>
-          <p>Humidity: {humidity}</p>
-          <p>Wind Speed: {windspeed}</p> */}
-          <h1>Weather App</h1>
-          <p>Latitude: 59.294989900000004</p>
-          <p>Longitude: 18.011105699999998</p>
-          <p>Temperature: 15.87</p>
-          <p>Humidity: 0.56</p>
-          <p>Wind Speed: 3.11</p>
-
-          <input type="checkbox" name="" id="kdslfkds" />
-        </header>
-
-        <section className="App-hourly">
-          <ul>
-            <li className="card">
-              <article>
-                <header>
-                  <h3>3 P.M</h3>
-                </header>
-                <h2>22℃</h2>
-                <footer>Feels like 18℃</footer>
-              </article>
-            </li>
-            <li className="card">
-              <article>
-                <header>
-                  <h3>3 P.M</h3>
-                </header>
-                <h2>22℃</h2>
-                <footer>Feels like 18℃</footer>
-              </article>
-            </li>
-            <li className="card">
-              <article>
-                <header>
-                  <h3>3 P.M</h3>
-                </header>
-                <h2>22℃</h2>
-                <footer>Feels like 18℃</footer>
-              </article>
-            </li>
-            <li className="card">
-              <article>
-                <header>
-                  <h3>3 P.M</h3>
-                </header>
-                <h2>22℃</h2>
-                <footer>Feels like 18℃</footer>
-              </article>
-            </li>
-            <li className="card">
-              <article>
-                <header>
-                  <h3>3 P.M</h3>
-                </header>
-                <h2>22℃</h2>
-                <footer>Feels like 18℃</footer>
-              </article>
-            </li>
-            <li className="card">
-              <article>
-                <header>
-                  <h3>3 P.M</h3>
-                </header>
-                <h2>22℃</h2>
-                <footer>Feels like 18℃</footer>
-              </article>
-            </li>
-          </ul>
-        </section>
+      <div>
+        <h1>Weather Result</h1>
+          <p>Timezone: {this.state.timezone}</p>
+          <p>Sunrise: {this.state.sunrise}</p>
+          <p>Sunset: {this.state.sunset}</p>
+          <p>Current temp is: {this.state.temp}</p>
+          <p>Humidity is: {this.state.humidity}</p>
+          <p>Winds direction: {this.state.windbearing}</p>
+          <p>Wind speed: {this.state.windspeed}</p>
       </div>
-    );
+    )
   }
-}
+};
 
 export default App;
